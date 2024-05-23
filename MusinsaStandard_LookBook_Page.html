@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musinsa Standard Lookbook</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 기본 스타일 초기화 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fff;
+            color: #333;
+        }
+
+        header {
+            background: #000;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            max-height: 50px;
+            margin-right: 20px;
+        }
+
+        header .title {
+            flex: 1;
+            text-align: center;
+            font-size: 2rem;
+            letter-spacing: 2px;
+        }
+
+        nav {
+            margin-left: auto;
+        }
+
+        .container {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        aside.year-list {
+            width: 200px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-right: 20px;
+        }
+
+        aside.year-list ul {
+            list-style: none;
+        }
+
+        aside.year-list li {
+            padding: 10px;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s ease;
+            border-radius: 5px;
+        }
+
+        aside.year-list li:hover {
+            background: #000;
+            color: #fff;
+        }
+
+        .categories {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 100%;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            list-style: none;
+            z-index: 10;
+            min-width: 150px;
+        }
+
+        aside.year-list li:hover .categories {
+            display: block;
+        }
+
+        .categories li {
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .categories li {
+            color:black;
+        }
+
+        .categories li:hover {
+            background: #000;
+            color: #fff;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        button {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 10px;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #333;
+        }
+
+        .lookbook-item, .favorite-item {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            width: calc(17% - 20px);
+            vertical-align: top;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .lookbook-item:hover, .favorite-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .lookbook-item h3, .favorite-item h3 {
+            display: none;
+        }
+
+        .lookbook-item:hover h3, .favorite-item:hover h3 {
+            display: block;
+            position: absolute;
+            bottom: 0%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #333;
+        }
+
+        .lookbook-item img, .favorite-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .lookbook-item:hover img, .favorite-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .favorite-button {
+            background: none;
+            border: none;
+            color: #000;
+            font-size: 24px;
+            cursor: pointer;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .favorite-button.active {
+            color: gold;
+        }
+
+        .favorite-button:hover {
+            color: gold;
+        }
+    </style>
+
+    <script>
+        const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+        function toggleFavorite(id) {
+            const index = favorites.indexOf(id);
+            if (index === -1) {
+                favorites.push(id);
+            } else {
+                favorites.splice(index, 1);
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            document.querySelectorAll('.favorite-button').forEach(button => {
+                const itemId = parseInt(button.getAttribute('data-id'));
+                button.classList.toggle('active', favorites.includes(itemId));
+                button.innerHTML = favorites.includes(itemId) ? '★' : '☆';
+            });
+        }
+
+        function showYear(year, category) {
+            const lookbookContent = document.getElementById('lookbook-content');
+            lookbookContent.querySelectorAll('.lookbook-item').forEach(item => {
+                item.style.display = 'none';
+            });
+            lookbookContent.querySelectorAll(`.lookbook-item[data-year="${year}"][data-category="${category}"]`).forEach(item => {
+                item.style.display = 'inline-block';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.favorite-button').forEach(button => {
+                const itemId = parseInt(button.getAttribute('data-id'));
+                button.classList.toggle('active', favorites.includes(itemId));
+                button.innerHTML = favorites.includes(itemId) ? '★' : '☆';
+            });
+
+            if (document.getElementById('lookbook-content')) {
+                showYear(new Date().getFullYear(), 'SS');
+            }
+        });
+    </script>
+</head>
+<body>
+    <header class="header">
+        <a href="MusinsaStandard_Page.html">
+            <img src="../웹 페이지 모아두는 곳/MUSINSA 사진 모음/MUSINSA_Logo.jpg" alt="Musinsa Standard Logo" class="logo">
+        </a>
+            <div class="title">Musinsa Standard Lookbook</div>
+        <nav>
+            <button onclick="navigate('favorites.html')">Favorites</button>
+        </nav>
+    </header>
+    <div class="container">
+        <aside class="year-list">
+            <ul>
+                <li>2022
+                    <ul class="categories" id="categories-2022">
+                        <li onclick="showYear(2022, 'SS')">S/S</li>
+                        <li onclick="showYear(2022, 'FW')">F/W</li>
+                        <li onclick="showYear(2022, 'Best')">Best Item</li>
+                    </ul>
+                </li>
+                <li>2023
+                    <ul class="categories" id="categories-2023">
+                        <li onclick="showYear(2023, 'SS')">S/S</li>
+                        <li onclick="showYear(2023, 'FW')">F/W</li>
+                        <li onclick="showYear(2023, 'Best')">Best Item</li>
+                    </ul>
+                </li>
+                <li>2024
+                    <ul class="categories" id="categories-2024">
+                        <li onclick="showYear(2024, 'SS')">S/S</li>
+                        <li onclick="showYear(2024, 'FW')">F/W</li>
+                        <li onclick="showYear(2024, 'Best')">Best Item</li>
+                    </ul>
+                </li>
+            </ul>
+        </aside>
+        <main>
+            <h1>Fashion Lookbook</h1>
+            <div id="lookbook-content">
+                <div class="lookbook-item" data-year="2022" data-category="SS">
+                    <img src="images/spring2022.jpg" alt="Men's Spring 2022">
+                    <h3>Men's Spring 2022</h3>
+                    <button class="favorite-button" data-id="1" onclick="toggleFavorite(1)">☆</button>
+                </div>
+                <div class="lookbook-item" data-year="2022" data-category="SS">
+                    <img src="images/summer2022.jpg" alt="Women's Summer 2022">
+                    <h3>Women's Summer 2022</h3>
+                    <button class="favorite-button" data-id="2" onclick="toggleFavorite(2)">☆</button>
+                </div>
+                <!---------------------------------------22FW----------------------------------------------->
+                <div class="lookbook-item" data-year="2022" data-category="FW">
+                    <img src="images/fall2022.jpg" alt="Men's Fall 2022">
+                    <h3>Men's Fall 2022</h3>
+                    <button class="favorite-button" data-id="3" onclick="toggleFavorite(3)">☆</button>
+                </div>
+                <div class="lookbook-item" data-year="2022" data-category="FW">
+                    <img src="images/winter2022.jpg" alt="Women's Winter 2022">
+                    <h3>Women's Winter 2022</h3>
+                    <button class="favorite-button" data-id="4" onclick="toggleFavorite(4)">☆</button>
+                </div>
+                <!--------------------------------------22Best------------------------------------------------>
+                <div class="lookbook-item" data-year="2022" data-category="Best">
+                    <img src="images/best2022.jpg" alt="Best Item 2022">
+                    <h3>Best Item 2022</h3>
+                    <button class="favorite-button" data-id="5" onclick="toggleFavorite(5)">☆</button>
+                </div>
+                <!-------------------------------------23SS------------------------------------------------->
+                <div class="lookbook-item" data-year="2023" data-category="SS">
+                    <img src="images/spring2023.jpg" alt="Men's Spring 2023">
+                    <h3>Men's Spring 2023</h3>
+                    <button class="favorite-button" data-id="6" onclick="toggleFavorite(6)">☆</button>
+                </div>
+                <div class="lookbook-item" data-year="2023" data-category="SS">
+                    <img src="images/summer2023.jpg" alt="Women's Summer 2023">
+                    <h3>Women's Summer 2023</h3>
+                    <button class="favorite-button" data-id="7" onclick="toggleFavorite(7)">☆</button>
+                </div>
+                <!--------------------------------------23FW------------------------------------------------>
+                <div class="lookbook-item" data-year="2023" data-category="FW">
+                    <img src="images/fall2023.jpg" alt="Men's Fall 2023">
+                    <h3>Men's Fall 2023</h3>
+                    <button class="favorite-button" data-id="8" onclick="toggleFavorite(8)">☆</button>
+                </div>
+                <div class="lookbook-item" data-year="2023" data-category="FW">
+                    <img src="images/winter2023.jpg" alt="Women's Winter 2023">
+                    <h3>Women's Winter 2023</h3>
+                    <button class="favorite-button" data-id="9" onclick="toggleFavorite(9)">☆</button>
+                </div>
+                <!--------------------------------------23Best------------------------------------------------>
+                <div class="lookbook-item" data-year="2023" data-category="Best">
+                    <img src="images/best2023.jpg" alt="Best Item 2023">
+                    <h3>Best Item 2023</h3>
+                    <button class="favorite-button" data-id="10" onclick="toggleFavorite(10)">☆</button>
+                </div>
+                <!--------------------------------------24SS------------------------------------------------>
+                <div class="lookbook-item" data-year="2024" data-category="SS">
+                    <img src="../웹 페이지 모아두는 곳/Uniqlo 사진 모음/Uniqlo24SS1.jpg" alt="윈드블락 스탠드 블루">
+                    <h3>윈드블락 스탠드 블루</h3>
+                    <button class="favorite-button" data-id="11" onclick="toggleFavorite(11)">☆</button>
+                </div>
+                <div class="lookbook-item" data-year="2024" data-category="SS">
+                    <img src="../웹 페이지 모아두는 곳/Uniqlo 사진 모음/goods_467111_sub1.avif" alt="UV PROTECTION 블루">
+                    <h3>UV PROTECTION 블루</h3>
+                    <button class="favorite-button" data-id="12" onclick="toggleFavorite(12)">☆</button>
+                </div>
+                <div class="lookbook-item" data-year="2024" data-category="SS">
+                    <img src="../웹 페이지 모아두는 곳/Uniqlo 사진 모음/goods_20.avif" alt="크루넥T">
+                    <h3>크루넥T</h3>
+                    <button class="favorite-button" data-id="20" onclick="toggleFavorite(20)">☆</button>
+                </div>
+                <div class="lookbook-item" data-year="2024" data-category="SS">
+                    <img src="../웹 페이지 모아두는 곳/Uniqlo 사진 모음/goods_21.avif" alt="리넨블렌드 스트라이프밴드칼라셔츠">
+                    <h3>리넨블렌드 스트라이프밴드칼라셔츠</h3>
+                    <button class="favorite-button" data-id="21" onclick="toggleFavorite(21)">☆</button>
+                </div>
+                <div class="lookbook-item" data-year="2024" data-category="SS">
+                    <img src="../웹 페이지 모아두는 곳/Uniqlo 사진 모음/goods_22.avif" alt="셔링T">
+                    <h3>셔링T</h3>
+                    <button class="favorite-button" data-id="22" onclick="toggleFavorite(22)">☆</button>
+                </div>
+                <div class="lookbook-item" data-year="2024" data-category="SS">
+                    <img src="../웹 페이지 모아두는 곳/Uniqlo 사진 모음/goods_23.avif" alt="크레이프저지T">
+                    <h3>크레이프저지T</h3>
+                    <button class="favorite-button" data-id="23" onclick="toggleFavorite(23)">☆</button>
+                </div>
+                <div class="lookbook-item" data-year="2024" data-category="SS">
+                    <img src="../웹 페이지 모아두는 곳/Uniqlo 사진 모음/goods_24.avif" alt="소프트립크루넥T">
+                    <h3>소프트립크루넥T</h3>
+                    <button class="favorite-button" data-id="24" onclick="toggleFavorite(24)">☆</button>
+                </div>
+                <div class="lookbook-item" data-year="2024" data-category="SS">
+                    <img src="../웹 페이지 모아두는 곳/Uniqlo 사진 모음/goods_25.avif" alt="소프트립 스트라이프 크루넥T">
+                    <h3>소프트립 스트라이프 크루넥T</h3>
+                    <button class="favorite-button" data-id="25" onclick="toggleFavorite(25)">☆</button>
+                </div>
+                <!-----------------------------------24FW--------------------------------------------------->
+                <div class="lookbook-item" data-year="2024" data-category="FW">
+                    <img src="../웹 페이지 모아두는 곳/Uniqlo 사진 모음/상품준비중.webp" alt="상품준비중...">
+                    <h3>상품준비중...</h3>
+                    <button class="favorite-button" data-id="13" onclick="toggleFavorite(13)">☆</button>
+                </div>
+                <!-------------------------------------24Best------------------------------------------------->
+                <div class="lookbook-item" data-year="2024" data-category="Best">
+                    <img src="../웹 페이지 모아두는 곳/Uniqlo 사진 모음/상품준비중.webp" alt="상품준비중...">
+                    <h3>상품준비중...</h3>
+                    <button class="favorite-button" data-id="15" onclick="toggleFavorite(15)">☆</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
